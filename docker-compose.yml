@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  dsv4:
+    image: vllm-metax:0.21.0-maca.ai3.7.1.7-dsv4-torch2.8-py310-ubuntu22.04-amd64
+    container_name: dsv4
+    network_mode: host
+    ipc: host
+    devices:
+      - "/dev/dri:/dev/dri"
+      - "/dev/mxcd:/dev/mxcd"
+    group_add:
+      - video
+    volumes:
+      - /YOUR_LOCAL_MODEL_PATH:/models
+    command: >
+      vllm serve /models/DeepSeek-V4-Flash-FlexSMQ-AWQ-W8A8
+      --trust-remote-code
+      --tensor-parallel-size 8
+      --gpu-memory-utilization 0.85
+      --kv-cache-dtype bfloat16
+      --block-size 256
+      --max-num-seq 32
+      --compilation-config '{"cudagraph_mode":"FULL_AND_PIECEWISE", "custom_ops":["all"]}'
