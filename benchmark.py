@@ -22,7 +22,7 @@ def get_vllm_metrics(base_url=VLLM_URL):
             continue
     return metrics
 
-# ================= 截图中的核心代码 =================
+# ================= 核心代码 =================
 prompts = [
     "What is quantization?",
     "Explain KV caching briefly.",
@@ -39,7 +39,8 @@ def _ask(prompt):
         extra_body={"chat_template_kwargs": {"enable_thinking": False}},
     )
 
-before = get_vllm_metrics()
+before = get_vllm_metrics() #before存储抓取的值
+
 print(f"Sending {len(prompts)} concurrent requests...\n")
 start = time.time()
 
@@ -54,6 +55,7 @@ with concurrent.futures.ThreadPoolExecutor(
     during = get_vllm_metrics()
     running = during.get("vllm:num_requests_running", "--")
     waiting = during.get("vllm:num_requests_waiting", "--")
+            
     print(f"  [mid-flight]  running: {running}  |  waiting: {waiting}")
 
     # 按请求完成的先后顺序处理结果
